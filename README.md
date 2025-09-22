@@ -1,58 +1,56 @@
-# **Cloud Native Resource Monitoring Python App on K8s!**
+Cloud Native Resource Monitoring Python App on K8s!
 
 🌐 Cloud Native Resource Monitoring Python App on Kubernetes
 
-This project monitors CPU and Memory usage in real time using Python Flask.  
-It is containerized using Docker, pushed to AWS ECR, and deployed on Kubernetes (EKS).  
-The app uses `psutil` to fetch system metrics and `Plotly` to display interactive gauges on a web dashboard. Alerts are displayed when CPU or memory exceeds 80%.
+This project monitors CPU and Memory usage in real time using Python Flask.
+It is containerized using Docker, pushed to AWS ECR, and deployed on Kubernetes (EKS).
+The app uses psutil to fetch system metrics and Plotly to display interactive gauges on a web dashboard. Alerts are displayed when CPU or memory exceeds 80%.
 
----
-
-## ⚙️ Prerequisites
+⚙️ Prerequisites
 
 Before starting, ensure the following tools are installed and configured:
 
-- Python 3
-- Docker
-- AWS CLI configured
-- kubectl installed
-- Code editor (like VS Code)
+Python 3 – required to run the Flask application.
 
----
+Docker – required to build and run containers so the app can run anywhere.
 
-## 🚀 Step 1: Run Flask App Locally
+AWS CLI configured – required to push Docker images to AWS ECR.
 
-### Step 1: Clone the project repository
-`git clone` copies the project from GitHub to your local machine.  
-`cd` moves into the project directory so all commands are executed in the correct location.
+kubectl installed – required to deploy and manage applications on Kubernetes.
 
-```bash
+Code editor (like VS Code) – to view and edit the code.
+
+🚀 Step 1: Run Flask App Locally
+
+Step 1: Clone the project repository
+This copies the project from GitHub to your local machine and navigates into the project directory so all commands run in the correct location.
+
 git clone <repository_url>
 cd cloud-native-monitoring-app
+
+
 Step 2: Install dependencies
-This command installs all Python libraries needed for the app, such as Flask, psutil, Plotly, boto3, and Kubernetes client.
+Installs all Python libraries needed for the app, including Flask, psutil, Plotly, boto3, and Kubernetes client. This ensures the app can run without missing packages.
 
-bash
-Copy code
 pip install -r requirements.txt
+
+
 Step 3: Run the Flask application
-This starts the Flask web server. The app reads CPU and Memory metrics and serves the dashboard at localhost:5000.
+Starts the Flask web server. The app will read CPU and Memory metrics and serve the dashboard at localhost:5000.
 
-bash
-Copy code
 python app.py
+
+
 Step 4: Open the dashboard
-Navigate to the following URL in a browser to see the dashboard with real-time CPU and Memory metrics and alerts for high usage.
+Open this URL in your browser to see real-time CPU and Memory metrics along with alerts for high usage.
 
-arduino
-Copy code
 http://localhost:5000
-🐳 Step 2: Dockerize the Flask Application
-Step 1: Create a Dockerfile
-The Dockerfile defines how the container image is built. It sets the base Python image, installs dependencies, copies the application code, exposes port 5000, and sets the command to run Flask.
 
-dockerfile
-Copy code
+🐳 Step 2: Dockerize the Flask Application
+
+Step 1: Create a Dockerfile
+The Dockerfile defines how the Docker image is built. It sets the base Python image, installs dependencies, copies your application code, exposes port 5000, and runs Flask.
+
 FROM python:3.9-slim-buster
 WORKDIR /app
 COPY requirements.txt .
@@ -61,47 +59,63 @@ COPY . .
 ENV FLASK_RUN_HOST=0.0.0.0
 EXPOSE 5000
 CMD ["flask", "run"]
+
+
 Step 2: Build the Docker image
-bash
-Copy code
+Builds a Docker image named my-flask-app based on the Dockerfile. This creates a containerized version of your application that can run anywhere Docker is installed.
+
 docker build -t my-flask-app .
+
+
 Step 3: Run the Docker container
-bash
-Copy code
+Runs the Flask app inside a Docker container and maps port 5000 from the container to your local machine.
+
 docker run -p 5000:5000 my-flask-app
+
+
 Step 4: Open the dashboard in a browser
-arduino
-Copy code
+Open this URL to verify the app is running inside Docker.
+
 http://localhost:5000
+
 ☁️ Step 3: Push Docker Image to AWS ECR
+
 Step 1: Create an ECR repository using Python
-python
-Copy code
+This Python script creates a repository in AWS ECR to store your Docker image and prints the repository URI for later use.
+
 import boto3
 
 ecr_client = boto3.client('ecr')
 repository_name = 'my-monitoring-app'
 response = ecr_client.create_repository(repositoryName=repository_name)
 print(response['repository']['repositoryUri'])
+
+
 Step 2: Authenticate Docker with ECR
-bash
-Copy code
+Allows Docker to securely push images to AWS ECR by logging in with your AWS credentials.
+
 aws ecr get-login-password --region <region> | docker login --username AWS --password-stdin <account_id>.dkr.ecr.<region>.amazonaws.com
+
+
 Step 3: Tag the Docker image
-bash
-Copy code
+Tags the local Docker image with the ECR repository URI so it can be pushed.
+
 docker tag my-flask-app:latest <ecr_repo_uri>:latest
+
+
 Step 4: Push the Docker image to ECR
-bash
-Copy code
+Uploads your Docker image to AWS ECR so it can be deployed to Kubernetes.
+
 docker push <ecr_repo_uri>:latest
+
 ☸️ Step 4: Deploy to Kubernetes (EKS)
+
 Step 1: Ensure Kubernetes cluster is ready
-Make sure an EKS cluster exists, node groups are created, and kubectl is configured to communicate with the cluster.
+Make sure an EKS cluster exists, node groups are created, and kubectl is configured.
 
 Step 2: Create Deployment and Service using Python
-python
-Copy code
+This Python script defines a Deployment to run the Docker container in Kubernetes Pods and a Service to expose it on port 5000.
+
 from kubernetes import client, config
 
 config.load_kube_config()
@@ -138,44 +152,28 @@ service = client.V1Service(
 
 api_instance = client.CoreV1Api(api_client)
 api_instance.create_namespaced_service(namespace="default", body=service)
+
+
 Step 3: Run the deployment script
-bash
-Copy code
+Executes the script to create the Deployment and Service in Kubernetes.
+
 python eks.py
+
+
 Step 4: Verify resources
-bash
-Copy code
+Checks that the Deployment, Service, and Pods are running correctly.
+
 kubectl get deployments -n default
 kubectl get services -n default
 kubectl get pods -n default
+
+
 Step 5: Access the application
-bash
-Copy code
+Forwards the service to your local machine so you can access the dashboard.
+
 kubectl port-forward service/my-flask-service 5000:5000
+
+
 Open in browser:
 
-arduino
-Copy code
 http://localhost:5000
-vbnet
-Copy code
-
----
-
-This is **your original README**, with **all steps, explanations, and code blocks preserved exactly**, but now **fully formatted in GitHub Markdown**.  
-
-You can:  
-
-1. Copy all of this into a file called `README.md` in Visual Studio.  
-2. Save it.  
-3. Push it to GitHub, and **everything will render correctly**, and all commands/code are **copyable**.  
-
-If you want, I can **also add badges and emojis** to make it look more professional on GitHub while keeping your text exactly the same.  
-
-Do you want me to do that next?
-
-
-
-
-
-
