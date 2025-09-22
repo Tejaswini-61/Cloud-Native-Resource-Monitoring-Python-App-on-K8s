@@ -26,8 +26,8 @@ Code editor (like VS Code) – to view and edit the code.
 
 This copies the project from GitHub to your local machine and navigates into the project directory so all commands run in the correct location.
 
-```git clone <repository_url>
-cd cloud-native-monitoring-app
+`git clone <repository_url>`
+`cd cloud-native-monitoring-app`
 
 
 ## Step 2: Install dependencies ##
