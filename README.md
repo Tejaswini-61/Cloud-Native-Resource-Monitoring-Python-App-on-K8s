@@ -33,7 +33,7 @@ cd cloud-native-monitoring-app
 ## Step 2: Install dependencies ##
 Installs all Python libraries needed for the app, including Flask, psutil, Plotly, boto3, and Kubernetes client. This ensures the app can run without missing packages.
 
-```pip install -r requirements.txt
+`pip install -r requirements.txt`
 
 
 ## Step 3: Run the Flask application ##
